@@ -73,9 +73,15 @@ class AccountHead
      */
     private $slug;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Transaction::class, mappedBy="head")
+     */
+    private $transactions;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,5 +235,35 @@ class AccountHead
             self::ACCOUNT_HEAD_INCOME,
             self::ACCOUNT_HEAD_LIABILITY
         ];
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setHead($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getHead() === $this) {
+                $transaction->setHead(null);
+            }
+        }
+
+        return $this;
     }
 }
