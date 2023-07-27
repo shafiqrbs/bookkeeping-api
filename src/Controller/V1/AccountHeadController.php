@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/v1/bookkeeping", name="bookkeeping_")
+ * @Route("/v1/bookkeeping/account-head", name="bookkeeping_account_head_")
  */
 class AccountHeadController extends AbstractController
 {
@@ -30,7 +30,7 @@ class AccountHeadController extends AbstractController
     }
 
     /**
-     * @Route("/account-head", name="index_account_head", methods={"GET"})
+     * @Route("/", name="index", methods={"GET"})
      * @param ManagerRegistry $doctrine
      * @param Request $request
      * @return JsonResponse
@@ -51,7 +51,24 @@ class AccountHeadController extends AbstractController
     }
 
     /**
-     * @Route("/account-head", name="create_account_head", methods={"POST"})
+     * @Route("/child-parent-group", name="index_child_parent_group", methods={"GET"})
+     * @param ManagerRegistry $doctrine
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function indexChildParentGroup(ManagerRegistry $doctrine, Request $request)
+    {
+        $heads = $doctrine->getRepository(AccountHead::class)->getHeadsWithChildParentGroup();
+        $response = new JsonResponse([
+            'status' => Response::HTTP_OK,
+            'data' => $heads,
+        ],Response::HTTP_OK);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
+    /**
+     * @Route("/", name="create_account_head", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */

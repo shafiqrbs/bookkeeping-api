@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Transaction
 {
+    const TRANSACTION_TYPE_DEBIT = 'DEBIT';
+    const TRANSACTION_TYPE_CREDIT = 'CREDIT';
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,11 +28,6 @@ class Transaction
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $headName;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $subHeadName;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -57,6 +54,12 @@ class Transaction
      */
     private $updatedAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=TransactionBatch::class, inversedBy="transaction")
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     */
+    private $transactionBatch;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,18 +85,6 @@ class Transaction
     public function setHeadName(?string $headName): self
     {
         $this->headName = $headName;
-
-        return $this;
-    }
-
-    public function getSubHeadName(): ?string
-    {
-        return $this->subHeadName;
-    }
-
-    public function setSubHeadName(?string $subHeadName): self
-    {
-        $this->subHeadName = $subHeadName;
 
         return $this;
     }
@@ -154,6 +145,18 @@ class Transaction
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getTransactionBatch(): ?TransactionBatch
+    {
+        return $this->transactionBatch;
+    }
+
+    public function setTransactionBatch(?TransactionBatch $transactionBatch): self
+    {
+        $this->transactionBatch = $transactionBatch;
 
         return $this;
     }

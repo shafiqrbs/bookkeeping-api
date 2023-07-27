@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\AccountHead;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use function Doctrine\ORM\QueryBuilder;
 
@@ -65,6 +66,20 @@ class AccountHeadRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getArrayResult();
+    }
+
+    public function getHeadsWithChildParentGroup()
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->join('e.parent', 'parent');
+
+        $qb->select('e.id AS value', "CONCAT(e.name, '( ', e.code, ' )') AS label");
+        $qb->addSelect('parent.name AS group');
+
+        $qb->andWhere($qb->expr()->isNotNull('e.parent'));
+        $qb->orderBy('parent.name');
+        return $qb->getQuery()->getArrayResult();
+
     }
 
 //    /**
